@@ -1,0 +1,127 @@
+/* ============================================================
+   塔罗占卜站 · 设计系统
+   配色方向：塔罗原生 — 暗金 / 酒红 / 象牙白 / 神秘紫
+   ============================================================ */
+
+:root {
+  /* ---------- 基础色板 ---------- */
+  --ink-950: #120b1a;  /* 最深背景 */
+  --ink-900: #1a1024;  /* 页面背景 */
+  --ink-850: #221531;  /* 卡片 */
+  --ink-800: #2b1b3d;  /* 悬浮卡片 */
+  --ink-700: #3a2550;  /* 边框浅 */
+  --ink-600: #4a3163;  /* 边框 */
+
+  /* 暗金 — 主色 */
+  --gold-300: #e8d9a8;
+  --gold-400: #d9c07a;
+  --gold-500: #c9a961;  /* primary */
+  --gold-600: #a8873f;
+  --gold-700: #7d6428;
+
+  /* 酒红 — 强调 */
+  --wine-400: #b8456a;
+  --wine-500: #9b3355;
+  --wine-600: #7a2540;
+  --wine-700: #571a2e;
+
+  /* 神秘紫 — 次要 */
+  --amethyst-400: #a67cc5;
+  --amethyst-500: #8b5fa8;
+  --amethyst-600: #6d4585;
+
+  /* 青瓷 — 辅助 */
+  --celadon-400: #7fb3ad;
+  --celadon-500: #5c918b;
+
+  /* 象牙白 — 文字 */
+  --ivory-100: #f7f1e6;
+  --ivory-200: #e8dfd0;
+  --ivory-300: #d4c7b4;
+  --ivory-400: #a89b87;
+  --ivory-500: #7d7364;
+
+  /* 状态色 */
+  --success: #6b9b5e;
+  --warning: #c9a227;
+  --danger: #b8454a;
+
+  /* ---------- 语义映射 ---------- */
+  --bg-base: var(--ink-900);
+  --bg-elevated: var(--ink-850);
+  --bg-hover: var(--ink-800);
+  --bg-input: var(--ink-950);
+
+  --text-primary: var(--ivory-100);
+  --text-secondary: var(--ivory-300);
+  --text-muted: var(--ivory-400);
+  --text-inverse: var(--ink-950);
+
+  --border-subtle: rgba(201, 169, 97, 0.16);
+  --border-default: rgba(201, 169, 97, 0.3);
+  --border-strong: rgba(201, 169, 97, 0.55);
+
+  --accent: var(--gold-500);
+  --accent-hover: var(--gold-400);
+  --accent-secondary: var(--wine-500);
+
+  /* ---------- 圆角 ---------- */
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* ---------- 间距 ---------- */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-2xl: 64px;
+
+  /* ---------- 阴影 ---------- */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-gold: 0 0 24px rgba(201, 169, 97, 0.18);
+  --shadow-gold-strong: 0 0 40px rgba(201, 169, 97, 0.28);
+
+  /* ---------- 字体 ---------- */
+  --font-display: 'Cinzel', 'Noto Serif SC', 'Songti SC', 'STSong', Georgia, serif;
+  --font-body: 'Noto Serif SC', 'Songti SC', 'STSong', Georgia, 'PingFang SC', serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* ---------- 动效 ---------- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration: 300ms;
+}
+
+/* 亮色模式：羊皮纸质感 */
+[data-theme='light'] {
+  --bg-base: #f4ede0;
+  --bg-elevated: #fbf6ec;
+  --bg-hover: #ffffff;
+  --bg-input: #ffffff;
+
+  --text-primary: #2b1b3d;
+  --text-secondary: #4a3163;
+  --text-muted: #7d7364;
+  --text-inverse: #f7f1e6;
+
+  --border-subtle: rgba(74, 49, 99, 0.12);
+  --border-default: rgba(74, 49, 99, 0.22);
+  --border-strong: rgba(74, 49, 99, 0.4);
+
+  --accent: #8b6a25;
+  --accent-hover: #6d5319;
+  --accent-secondary: #9b3355;
+
+  --shadow-sm: 0 2px 8px rgba(74, 49, 99, 0.08);
+  --shadow: 0 8px 24px rgba(74, 49, 99, 0.12);
+  --shadow-lg: 0 16px 48px rgba(74, 49, 99, 0.16);
+  --shadow-gold: 0 0 24px rgba(168, 135, 63, 0.12);
+}
