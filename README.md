@@ -13,8 +13,8 @@
 | 模块 | 说明 |
 |------|------|
 | **市场速览** | 首页实时行情看板，热门 / 涨幅榜 / 跌幅榜三种视图，点击代币直接起卦 |
-| **预测市场** | Polymarket 热门预测市场，实时概率条 + 人群共识判定 |
-| **卦象 × 共识对照** | 占卜时自动检索相关市场，将卦象基调与人群概率做背离分析 |
+| **合约共识** | Gate.io 永续合约的资金费率、多空账户比与持仓量，实时共识判定 |
+| **卦象 × 仓位对照** | 占卜时自动取回对应合约，将卦象基调与仓位共识做背离分析 |
 | **六爻起卦** | 三枚铜钱掷六次，自下而上成卦。含动爻、变卦、纳音、完整卦辞 |
 | **梅花易数** | 时间起卦 / 文本起卦（基于代币地址），八字定上下卦、六取动爻 |
 | **塔罗牌阵** | 韦特体系完整 78 张牌，4 种牌阵：单张 / 三张 / 五张 / 凯尔特十字 |
@@ -35,16 +35,18 @@
 - 涨跌用左侧色条区分：绿色代表上涨、红色代表下跌
 - 接口失败时显示友好提示，占卜功能不受影响
 
-### 预测市场（Polymarket）
+### 合约共识（Gate.io 永续合约）
 
-- 集成 Polymarket Gamma API，公开只读接口，无需认证
-- 每张卡片展示预测问题、Yes 概率条（暗金渐变）、24h 概率变化、共识强度判定
-- 三种筛选：**最热** / **最新** / **加密主题**
-- 点击卡片跳转 Polymarket 原始市场页
-- **起卦联动**：输入代币后自动检索相关市场，生成「卦象 vs 共识」对照分析
-  - 吻合 → 预期已被消化，超额空间有限
-  - 背离 → 提示分歧可能孕育机会，但也需警惕自我安慰
-- 2 分钟自动刷新（预测市场变化较快）
+- 每张卡片展示币种、**资金费率年化**、24h 涨跌、**多空账户比**与共识标签
+- 三种排序：**费率极端** / **持仓量** / **成交额**
+- 点击卡片跳转 Gate.io 对应永续合约交易页
+- **起卦联动**：输入代币后自动取回对应合约，生成「卦象 vs 仓位」对照分析
+  - 吻合 → 判断已被仓位消化，超额空间有限
+  - 背离 → 共识尚未计入定价，但需警惕自我安慰
+- 资金费率超过年化 ±30% 时额外给出拥挤度警告
+- 2 分钟自动刷新（页面不可见时暂停）
+
+**为什么不用预测市场**：Polymarket、Kalshi、Manifold 的 API 在国内网络下实测全部超时，公共 CORS 代理也全部不可达。永续合约的仓位分布是可达的等价替代 —— 而且它反映的是真金白银的持仓成本，比吃瓜投票更贴近真实资金意图。
 
 ---
 
@@ -155,7 +157,7 @@ mingde/
 │   ├── algorithms.js      # 六爻 / 梅花 / 塔罗 核心算法
 │   ├── market.js          # 行情：Gate.io 主源 + DexScreener 链上源
 │   ├── market-board.js    # 首页行情看板
-│   ├── polymarket.js      # Polymarket 预测市场数据
+│   ├── derivatives.js     # Gate.io 永续合约共识数据
 │   ├── prediction-board.js# 预测市场看板
 │   ├── interpret.js       # 卦象×行情×共识 交叉解读
 │   ├── share.js           # Canvas 分享卡生成
@@ -186,20 +188,21 @@ node test-algorithms.mjs
 | 接口 | 用途 |
 |------|------|
 | `GET api.gateio.ws/api/v4/spot/tickers?currency_pair={PAIR}` | 币种行情（主源，国内直连，实测 0.4~1 秒） |
+| `GET api.gateio.ws/api/v4/futures/usdt/tickers?contract={CONTRACT}` | 永续合约行情、资金费率、持仓量、成交额 |
+| `GET api.gateio.ws/api/v4/futures/usdt/contracts/{CONTRACT}` | 多空账户数、资金费率结算间隔 |
 | `GET api.dexscreener.com/latest/dex/tokens/{address}` | 链上代币行情（CA 查询） |
-| `GET gamma-api.polymarket.com/events?...` | Polymarket 热门预测市场 |
-| `GET gamma-api.polymarket.com/public-search?q={keyword}` | Polymarket 关键词检索 |
 
 均为公开接口，无需认证或 API Key。数据可能存在延迟。
 
 ### 国内网络适配
 
-主源选用 Gate.io 是因为实测在国内直连稳定（0.4~1 秒），而 DexScreener、Polymarket 在部分网络环境下可能较慢或不可达。
+主源选用 Gate.io 是因为实测在国内直连稳定（现货 446ms、永续 123ms~1.4s），而 DexScreener、Polymarket、Kalshi、Manifold 以及各类公共 CORS 代理在本机实测全部 8 秒超时。
 
 因此：
 
-- **币种符号查询**（如 `SOL`、`BTC`）→ 走 Gate.io，快速稳定
-- **完整合约地址**（CA）→ 走 DexScreener，因 Gate.io 不支持按 CA 查链上数据
+- **币种符号查询**（如 `SOL`、`BTC`）→ 走 Gate.io 现货，快速稳定
+- **完整合约地址（CA）** → 走 DexScreener，因 Gate.io 不支持按 CA 查链上数据
+- **共识信号** → 走 Gate.io 永续合约，替代不可达的预测市场
 - 任一数据源失败都会降级为友好提示，**不影响占卜核心功能**
 
 ---

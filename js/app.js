@@ -9,7 +9,7 @@ import * as store from './storage.js';
 import { generateShareCard, downloadCanvas } from './share.js';
 import { initMarketBoard } from './market-board.js';
 import { initPredictionBoard } from './prediction-board.js';
-import { findRelatedMarket } from './polymarket.js';
+import { findConsensus, consensusScore } from './derivatives.js';
 
 /* ---------------- 状态 ---------------- */
 const state = {
@@ -73,7 +73,7 @@ function init() {
     onPick: handlePickFromBoard,
   });
 
-  // 预测市场看板
+  // 合约共识看板
   initPredictionBoard();
 
   // 初始渲染
@@ -335,19 +335,19 @@ async function performDivination() {
 
     const market = state.token ? (state.market || analyzeMarket(state.token)) : null;
 
-    // 尝试找相关预测市场（失败不影响主流程）
-    let prediction = null;
+    // 尝试取对应永续合约的仓位共识（失败不影响主流程）
+    let consensus = null;
     if (state.token) {
-      prediction = await findRelatedMarket(state.token).catch(() => null);
+      consensus = await findConsensus(state.token).catch(() => null);
     }
 
-    const report = buildReport(divination, state.token, market, prediction);
+    const report = buildReport(divination, state.token, market, consensus);
 
-    state.result = { divination, token: state.token, prediction, ...report };
+    state.result = { divination, token: state.token, consensus, ...report };
 
     renderResult();
     saveResult();
-    toast(prediction ? '卦象已成 · 已结合人群共识' : '卦象已成');
+    toast(consensus ? '卦象已成 · 已结合仓位共识' : '卦象已成');
   } catch (err) {
     console.error(err);
     toast('推演失败：' + err.message);
@@ -565,10 +565,12 @@ function saveResult() {
     tokenAddress: state.token ? state.token.address : null,
     price: state.token ? state.token.priceUsd : null,
     change24h: state.token ? state.token.change24h : null,
-    prediction: state.result.prediction ? {
-      question: state.result.prediction.question,
-      yesPct: state.result.prediction.yesPct,
-      url: state.result.prediction.url,
+    consensus: state.result.consensus ? {
+      contract: state.result.consensus.contract,
+      fundingAPR: state.result.consensus.fundingAPR,
+      accountLS: state.result.consensus.accountLS,
+      score: consensusScore(state.result.consensus),
+      url: state.result.consensus.url,
     } : null,
     divination: r.divination,
   });

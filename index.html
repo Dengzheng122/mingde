@@ -74,7 +74,7 @@
         <div class="market-head">
           <div>
             <div class="report-title" style="margin:0; border:none; padding:0;">
-              预测市场 <span class="small muted" style="font-family:var(--font-body);">Polymarket · 人群共识</span>
+              合约共识 <span class="small muted" style="font-family:var(--font-body);">Gate.io 永续 · 资金费率与仓位</span>
             </div>
             <div class="market-stamp" id="predStamp" style="margin-top:4px;">
               <span class="live-dot"></span><span>加载中…</span>
@@ -82,9 +82,9 @@
           </div>
           <div class="row" style="gap: var(--space-sm);">
             <div class="market-tabs" id="predTabs">
-              <button class="pred-tab market-tab active" data-filter="volume" type="button">最热</button>
-              <button class="pred-tab market-tab" data-filter="new" type="button">最新</button>
-              <button class="pred-tab market-tab" data-filter="crypto" type="button">加密</button>
+              <button class="pred-tab market-tab active" data-sort="funding" type="button">费率极端</button>
+              <button class="pred-tab market-tab" data-sort="oi" type="button">持仓量</button>
+              <button class="pred-tab market-tab" data-sort="volume" type="button">成交额</button>
             </div>
             <button class="icon-btn" id="predRefresh" title="刷新预测市场" aria-label="刷新">↻</button>
           </div>
@@ -154,7 +154,7 @@
 
       <div class="disclaimer">
         ⚠️ 本站所有解读均由传统术数算法推演生成，<strong>纯属娱乐与自我思考参考</strong>，不构成任何投资建议。
-        链上行情数据来自 DexScreener 公开接口，可能存在延迟。请勿据此进行投资决策。
+        链上行情数据来自 Gate.io / DexScreener 公开接口，可能存在延迟。请勿据此进行投资决策。
       </div>
 
     </div>
@@ -242,13 +242,21 @@
         </div>
 
         <div class="card-framed">
-          <div class="report-title">◉ 预测市场</div>
+          <div class="report-title">◉ 仓位共识</div>
           <div class="report-text">
-            集成 <strong>Polymarket Gamma API</strong>（gamma-api.polymarket.com），公开只读接口，无需认证。
+            本站不使用预测市场。Polymarket、Kalshi 等预测市场接口在国内网络下实测全部超时，而 Gate.io 永续合约可以稳定直连，因此改用<strong>永续合约的仓位分布</strong>作为共识来源。
 
-展示热门预测市场的实时概率分布，可按最热 / 最新 / 加密主题筛选。进行占卜时若输入了代币，系统会自动检索相关预测市场，将<strong>卦象基调与人群共识做对照</strong> —— 吻合意味着预期已被消化，背离则提示分歧可能孕育机会。
+三个核心信号：
 
-预测市场反映的是参与者的集体下注与资金倾向，本质是一种群体意见，<strong>并非对未来的可靠预测</strong>，本站仅将其作为观察市场情绪的一面镜子。
+<strong>资金费率</strong> — 每 8 小时结算一次，为正表示多头向空头付费，说明多头仓位拥挤；本站将其折算成年化（×3×365），超过 +30% 判定为多头拥挤，低于 -30% 判定为空头拥挤。极端费率往往意味着反向风险：多头拥挤时容易触发连环平仓，空头拥挤时容易触发轧空。
+
+<strong>多空账户比</strong> — 永续合约上持多与持空的账户数之比，反映散户站队方向。
+
+<strong>持仓量</strong> — 未平仓合约规模，衡量参与热度。
+
+进行占卜时若输入了代币，系统会自动取回对应合约，将<strong>卦象基调与仓位共识做对照</strong> —— 吻合意味着判断已被仓位消化，背离则提示共识尚未反映定价。
+
+资金费率反映的是持仓者愿意付出的持仓成本，是真金白银的仓位倾向，<strong>并非对未来的可靠预测</strong>，本站仅将其作为观察市场情绪的一面镜子。
           </div>
         </div>
 
@@ -287,6 +295,7 @@
     <div class="container">
       <div>玄象卜卦 · 六爻 / 梅花易数 / 塔罗 × 链上行情</div>
       <div class="footer-links">
+        <a href="https://www.gate.com/docs/developers/apiv4/en/" target="_blank" rel="noopener">Gate.io API</a>
         <a href="https://docs.dexscreener.com/api/reference" target="_blank" rel="noopener">DexScreener API</a>
         <a href="https://github.com/Dengzheng122" target="_blank" rel="noopener">GitHub</a>
         <span class="muted">卦象仅供参考 · 投资需谨慎</span>

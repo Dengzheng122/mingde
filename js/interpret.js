@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { analyzeMarket } from './market.js';
-import { probSentiment, daysLeft } from './polymarket.js';
+import { fundingSentiment, consensusScore } from './derivatives.js';
 
 /** 根据卦象基调 + 市场情绪生成综合结论 */
 export function synthesize(divination, token, market) {
@@ -39,7 +39,7 @@ export function synthesize(divination, token, market) {
 }
 
 /** 生成完整的文字报告 */
-export function buildReport(divination, token, market, prediction = null) {
+export function buildReport(divination, token, market, consensus = null) {
   const synth = synthesize(divination, token, market);
   const sections = [];
 
@@ -135,30 +135,39 @@ export function buildReport(divination, token, market, prediction = null) {
     sections.push({ title: '⚖ 行情', icon: '市', text: lines.join('\n') });
   }
 
-  // ---------- 人群共识对照（预测市场） ----------
-  if (prediction) {
-    const sent = probSentiment(prediction);
-    const dLeft = daysLeft(prediction);
+  // ---------- 仓位共识对照（永续合约） ----------
+  if (consensus) {
+    const sent = fundingSentiment(consensus);
+    const cScore = consensusScore(consensus);
     const lines = [];
     const luckPct = Math.round(((synth.luck - 1) / 4) * 100);
+    const aprPct = (consensus.fundingAPR * 100).toFixed(1);
+    const aprSign = consensus.fundingAPR > 0 ? '+' : '';
 
-    lines.push(`相关预测市场：<strong>${escapeHtml(prediction.question)}</strong>`);
+    lines.push(`永续合约：<strong>${escapeHtml(consensus.contract)}</strong>（Gate.io USDT 本位）`);
     lines.push('');
-    lines.push(`人群共识：<strong>是 ${prediction.yesPct}%</strong> / 否 ${prediction.noPct}%`);
-    if (dLeft !== null && dLeft >= 0) lines.push(`距离结算约 ${dLeft} 天，24 小时成交 ${formatVol(prediction.volume24hr)}`);
+    lines.push(`资金费率年化：<strong>${aprSign}${aprPct}%</strong> · 多空账户比 <strong>${consensus.accountLS.toFixed(2)}</strong>`);
+    lines.push(`持仓 ${formatNumber(consensus.oiBase)} · 24 小时成交 ${formatVol(consensus.volume24h)}`);
+    lines.push(`共识看多度：<strong>${cScore}</strong> / 100（50 为多空均衡）`);
     lines.push('');
-    lines.push('卦象与共识对照：');
+    lines.push('卦象与仓位对照：');
 
-    const gap = luckPct - prediction.yesPct;
+    const gap = luckPct - cScore;
     if (Math.abs(gap) <= 12) {
-      lines.push(`→ 卦象基调（${luckPct}%）与人群预期（${prediction.yesPct}%）基本吻合，说明当前判断已反映在价格与情绪中，超额收益空间有限。${sent.label}的状态下，顺势而为优于逆向操作。`);
+      lines.push(`→ 卦象基调（${luckPct}%）与仓位共识（${cScore}%）基本吻合，说明当前判断已反映在价格与仓位中，超额空间有限。${sent.label}的状态下，顺势而为优于逆向操作。`);
     } else if (gap > 12) {
-      lines.push(`→ 卦象明显乐观于人群预期（卦象 ${luckPct}% vs 共识 ${prediction.yesPct}%）。若两者出现背离，卦象代表的是尚未被定价的可能性，但需警惕这也可能只是自我安慰。分歧本身就是机会窗口。`);
+      lines.push(`→ 卦象明显乐观于仓位共识（卦象 ${luckPct}% vs 共识 ${cScore}%）。合约持仓尚未把这份乐观计入，意味着它代表的是尚未被定价的可能性 —— 但同样要警惕，这也可能只是自我安慰。分歧本身就是机会窗口。`);
     } else {
-      lines.push(`→ 卦象明显谨慎于人群预期（卦象 ${luckPct}% vs 共识 ${prediction.yesPct}%）。市场情绪偏乐观而卦象示警，这种背离常出现在行情末段。若卦象应验，说明共识尚未反映风险。`);
+      lines.push(`→ 卦象明显谨慎于仓位共识（卦象 ${luckPct}% vs 共识 ${cScore}%）。仓位仍偏乐观而卦象示警，这种背离常出现在行情末段。若卦象应验，说明共识尚未反映风险。`);
     }
+
+    if (Math.abs(consensus.fundingAPR) >= 0.30) {
+      lines.push('');
+      lines.push(`⚠ 资金费率已达极端水平（年化 ${aprSign}${aprPct}%），意味着${consensus.fundingAPR > 0 ? '多头仓位高度拥挤，一旦转势容易触发连环平仓' : '空头仓位高度拥挤，一旦反弹容易触发轧空'}。极端共识往往正是风险而非机会的来源。`);
+    }
+
     lines.push('');
-    lines.push('需注意：预测市场反映的是参与者的集体下注与资金倾向，属于一种群体意见，本身不构成对未来的可靠预测。此处仅作为「市场在想什么」的一面镜子。');
+    lines.push('需注意：资金费率反映的是持仓者愿意付出的持仓成本，是真金白银的仓位倾向，而非对未来的可靠预测。此处仅作为「市场在想什么」的一面镜子。');
 
     sections.push({ title: '◉ 共识', icon: '众', text: lines.join('\n'), verdict: sent });
   }

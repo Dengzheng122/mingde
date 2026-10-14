@@ -1126,7 +1126,7 @@ h3 { font-size: clamp(1.1rem, 2.5vw, 1.4rem); }
 }
 
 /* ============================================================
-   预测市场看板（Polymarket）
+   合约共识看板（Gate.io 永续合约）
    ============================================================ */
 
 .pred-board {
@@ -1159,18 +1159,31 @@ h3 { font-size: clamp(1.1rem, 2.5vw, 1.4rem); }
   box-shadow: var(--shadow-gold);
 }
 
-/* 问题文本 */
+/* 合约标题行 */
 .pred-q {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-xs);
   font-family: var(--font-display);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--text-primary);
-  line-height: 1.45;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
+  line-height: 1.35;
+  min-height: 1.4em;
+}
+
+.pred-q strong {
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.pred-q span {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  white-space: nowrap;
   overflow: hidden;
-  min-height: 3.9em;
+  text-overflow: ellipsis;
 }
 
 /* 概率条 */
