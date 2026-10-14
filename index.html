@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>玄象卜卦 · 链上玄学占卜</title>
+<meta name="description" content="结合六爻、梅花易数与韦特塔罗，结合链上真实行情的玄学分析平台">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Noto+Serif+SC:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============ 顶部导航 ============ -->
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="#divine">
+        <span class="brand-icon">✦</span>
+        <span>玄象卜卦</span>
+      </a>
+      <nav class="nav" id="nav">
+        <button class="nav-btn active" data-page="divine">占 卜</button>
+        <button class="nav-btn" data-page="daily">每日运势</button>
+        <button class="nav-btn" data-page="history">历史</button>
+        <button class="nav-btn" data-page="favorites">收藏</button>
+        <button class="nav-btn" data-page="about">关于</button>
+      </nav>
+      <button class="icon-btn" id="themeToggle" title="切换明暗主题" aria-label="切换主题">☀</button>
+    </div>
+  </header>
+
+  <!-- ============ 占卜页 ============ -->
+  <main class="page active" id="page-divine">
+    <div class="container">
+
+      <div class="section-head">
+        <h2>起 卦</h2>
+        <p class="section-sub">选择术数方式，输入代币合约地址以结合链上行情解读</p>
+      </div>
+
+      <!-- ============ 市场速览看板 ============ -->
+      <div class="card-framed market-board" id="marketBoard">
+        <div class="market-head">
+          <div>
+            <div class="report-title" style="margin:0; border:none; padding:0;">市场速览</div>
+            <div class="market-stamp" id="marketStamp" style="margin-top:4px;">
+              <span class="live-dot"></span><span>加载中…</span>
+            </div>
+          </div>
+          <div class="row" style="gap: var(--space-sm);">
+            <div class="market-tabs" id="marketTabs">
+              <button class="market-tab active" data-mode="hot" type="button">热门</button>
+              <button class="market-tab" data-mode="gainers" type="button">涨幅</button>
+              <button class="market-tab" data-mode="losers" type="button">跌幅</button>
+            </div>
+            <button class="icon-btn" id="marketRefresh" title="刷新行情" aria-label="刷新行情">↻</button>
+          </div>
+        </div>
+        <div id="marketGrid">
+          <div class="market-grid">
+            <div class="skeleton-card"></div><div class="skeleton-card"></div>
+            <div class="skeleton-card"></div><div class="skeleton-card"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 预测市场看板 ============ -->
+      <div class="card-framed pred-board" id="predBoard">
+        <div class="market-head">
+          <div>
+            <div class="report-title" style="margin:0; border:none; padding:0;">
+              预测市场 <span class="small muted" style="font-family:var(--font-body);">Polymarket · 人群共识</span>
+            </div>
+            <div class="market-stamp" id="predStamp" style="margin-top:4px;">
+              <span class="live-dot"></span><span>加载中…</span>
+            </div>
+          </div>
+          <div class="row" style="gap: var(--space-sm);">
+            <div class="market-tabs" id="predTabs">
+              <button class="pred-tab market-tab active" data-filter="volume" type="button">最热</button>
+              <button class="pred-tab market-tab" data-filter="new" type="button">最新</button>
+              <button class="pred-tab market-tab" data-filter="crypto" type="button">加密</button>
+            </div>
+            <button class="icon-btn" id="predRefresh" title="刷新预测市场" aria-label="刷新">↻</button>
+          </div>
+        </div>
+        <div id="predGrid">
+          <div class="pred-grid">
+            <div class="skeleton-card" style="height:96px;"></div>
+            <div class="skeleton-card" style="height:96px;"></div>
+            <div class="skeleton-card" style="height:96px;"></div>
+            <div class="skeleton-card" style="height:96px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 术数选择 -->
+      <div class="method-grid" id="methodGrid">
+        <button class="method-card selected" data-method="liuyao">
+          <span class="method-icon">☰</span>
+          <div class="method-name">六爻起卦</div>
+          <div class="method-desc">三枚铜钱掷六次，自下而上成卦。可得动爻与变卦，最为正统的周易占法。</div>
+        </button>
+        <button class="method-card" data-method="meihua">
+          <span class="method-icon">🌸</span>
+          <div class="method-name">梅花易数</div>
+          <div class="method-desc">以时间或数字起卦，讲究"心动则有应"。简便灵活，贴近日常决策。</div>
+        </button>
+        <button class="method-card" data-method="tarot">
+          <span class="method-icon">✦</span>
+          <div class="method-name">塔罗牌阵</div>
+          <div class="method-desc">韦特体系 78 张。支持单张、三张、五张与凯尔特十字牌阵。</div>
+        </button>
+      </div>
+
+      <!-- 塔罗牌阵选择（仅塔罗模式显示） -->
+      <div class="card" id="spreadPanel" style="display:none; margin-bottom: var(--space-lg);">
+        <div class="label" style="margin-bottom: var(--space-sm);">选择牌阵</div>
+        <div class="row" id="spreadOptions"></div>
+      </div>
+
+      <!-- 代币输入 -->
+      <div class="card-framed" style="margin-bottom: var(--space-lg);">
+        <div class="stack">
+          <div class="field">
+            <label class="label" for="tokenInput">代币合约地址或币种符号（选填）</label>
+            <input class="input" id="tokenInput" type="text" autocomplete="off" spellcheck="false"
+                   placeholder="输入合约地址，或直接输入币种符号如 SOL / PEPE / BTC">
+            <div class="small muted">回车查询。币种符号走 Gate.io（快速稳定），合约地址走链上数据源</div>
+          </div>
+
+          <div id="tokenPreview"></div>
+
+          <div class="row" style="gap: var(--space-sm);">
+            <button class="btn btn-ghost btn-sm" id="queryBtn" type="button">🔍 查询行情</button>
+            <button class="btn btn-ghost btn-sm" id="clearTokenBtn" type="button" style="display:none;">✕ 清除</button>
+          </div>
+
+          <div id="searchResults" style="display:none;"></div>
+
+          <button class="btn" id="divineBtn" type="button">◈ 起卦解读</button>
+        </div>
+      </div>
+
+      <!-- 结果区 -->
+      <div id="resultArea"></div>
+
+      <div class="divider"></div>
+
+      <div class="disclaimer">
+        ⚠️ 本站所有解读均由传统术数算法推演生成，<strong>纯属娱乐与自我思考参考</strong>，不构成任何投资建议。
+        链上行情数据来自 DexScreener 公开接口，可能存在延迟。请勿据此进行投资决策。
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ============ 每日运势页 ============ -->
+  <main class="page" id="page-daily">
+    <div class="container">
+      <div class="section-head">
+        <h2>每 日 运 势</h2>
+        <p class="section-sub" id="dailyDate">加载中…</p>
+      </div>
+
+      <div id="dailyContent"></div>
+    </div>
+  </main>
+
+  <!-- ============ 历史页 ============ -->
+  <main class="page" id="page-history">
+    <div class="container">
+      <div class="row-between" style="margin-bottom: var(--space-lg);">
+        <div class="section-head" style="margin:0;">
+          <h2>占 卜 历 史</h2>
+        </div>
+        <div class="row" style="gap: var(--space-sm);">
+          <button class="btn btn-ghost btn-sm" id="exportBtn" type="button">导出</button>
+          <button class="btn btn-ghost btn-sm" id="clearHistoryBtn" type="button">清空</button>
+        </div>
+      </div>
+      <div id="historyContent"></div>
+    </div>
+  </main>
+
+  <!-- ============ 收藏页 ============ -->
+  <main class="page" id="page-favorites">
+    <div class="container">
+      <div class="row-between" style="margin-bottom: var(--space-lg);">
+        <div class="section-head" style="margin:0;">
+          <h2>我 的 收 藏</h2>
+        </div>
+        <div class="row" style="gap: var(--space-sm);">
+          <button class="btn btn-ghost btn-sm" id="exportFavBtn" type="button">导出</button>
+          <button class="btn btn-ghost btn-sm" id="clearFavBtn" type="button">清空</button>
+        </div>
+      </div>
+      <div id="favContent"></div>
+    </div>
+  </main>
+
+  <!-- ============ 关于页 ============ -->
+  <main class="page" id="page-about">
+    <div class="container">
+      <div class="section-head">
+        <h2>关 于</h2>
+        <p class="section-sub">玄象卜卦 · 技术说明</p>
+      </div>
+
+      <div class="stack-lg">
+        <div class="card-framed">
+          <div class="report-title">⚙ 术数实现</div>
+          <div class="report-text">
+            本站的三套占卜均为<strong>真实算法实现</strong>，非随机数拼凑：
+
+<strong>六爻</strong> — 每次投掷三枚铜钱，六次成卦。铜钱组合决定老阳(9)、少阳(7)、少阴(8)、老阴(6)，对应阳爻、阳爻、阴爻、阴爻+动。含完整六十四卦卦名、卦象符号、纳音与卦辞。
+
+<strong>梅花易数</strong> — 采用时间起卦 / 数字起卦，年月日时数除八取余定上下卦，除六取余定动爻。
+
+<strong>塔罗</strong> — 韦特体系完整 78 张牌（22 张大阿卡纳 + 56 张小阿卡纳），Fisher-Yates 洗牌，大牌逆位率 30%、小牌 45%。
+          </div>
+        </div>
+
+        <div class="card-framed">
+          <div class="report-title">⚖ 行情数据</div>
+          <div class="report-text">
+            行情采用<strong>双数据源</strong>架构，均为公开接口，无需 API Key：
+
+<strong>Gate.io</strong>（主源）— 用于首页看板与币种符号查询。覆盖 10 个主流币种，实测响应约 0.4~1 秒，国内直连稳定。
+
+<strong>DexScreener</strong>（链上源）— 用于输入完整合约地址（CA）时查询链上交易对数据，支持 Solana 与 EVM 链。
+
+市场情绪评分由多个维度加权得出：24 小时涨跌、买卖笔数比、成交额深度、市值区间。评分区间 0~100，50 为中性。
+
+数据可能存在延迟，仅供技术参考。
+          </div>
+        </div>
+
+        <div class="card-framed">
+          <div class="report-title">◉ 预测市场</div>
+          <div class="report-text">
+            集成 <strong>Polymarket Gamma API</strong>（gamma-api.polymarket.com），公开只读接口，无需认证。
+
+展示热门预测市场的实时概率分布，可按最热 / 最新 / 加密主题筛选。进行占卜时若输入了代币，系统会自动检索相关预测市场，将<strong>卦象基调与人群共识做对照</strong> —— 吻合意味着预期已被消化，背离则提示分歧可能孕育机会。
+
+预测市场反映的是参与者的集体下注与资金倾向，本质是一种群体意见，<strong>并非对未来的可靠预测</strong>，本站仅将其作为观察市场情绪的一面镜子。
+          </div>
+        </div>
+
+        <div class="card-framed">
+          <div class="report-title">🔒 隐私说明</div>
+          <div class="report-text">
+            本站<strong>无后端、无数据库、无账号系统</strong>。所有历史记录与收藏均保存在你浏览器的 localStorage 中，不会上传到任何服务器。
+
+清除浏览器数据会一并删除这些记录。可在「历史」或「收藏」页面导出 JSON 备份。
+          </div>
+        </div>
+
+        <div class="card-framed">
+          <div class="report-title">🖤 设计说明</div>
+          <div class="report-text">
+            配色取自传统塔罗牌：<strong>暗金 (#c9a961)、酒红 (#7a2540)、象牙白 (#f0e6d8)、神秘紫 (#8b5fa8)</strong>，深紫底色 (#1a1024) 营造神秘氛围。
+
+支持浅色羊皮纸模式，遵循 prefers-reduced-motion 无障碍偏好。
+          </div>
+        </div>
+
+        <div class="card-framed">
+          <div class="report-title">⚠ 使用须知</div>
+          <div class="report-text">
+            本站内容纯属<strong>娱乐与自我思考参考</strong>，不构成投资建议。
+
+传统术数属于文化与哲学范畴，并非科学预测工具。请理性看待，切勿用于实际投资决策。
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ 页脚 ============ -->
+  <footer class="footer">
+    <div class="container">
+      <div>玄象卜卦 · 六爻 / 梅花易数 / 塔罗 × 链上行情</div>
+      <div class="footer-links">
+        <a href="https://docs.dexscreener.com/api/reference" target="_blank" rel="noopener">DexScreener API</a>
+        <a href="https://github.com/Dengzheng122" target="_blank" rel="noopener">GitHub</a>
+        <span class="muted">卦象仅供参考 · 投资需谨慎</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
